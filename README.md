@@ -26,6 +26,20 @@ Browser -> AWS Load Balancer -> frontend (nginx) -> backend (FastAPI)
 | `.github/workflows/ci-cd.yml` | CI/CD pipeline (test, build, deploy) |
 | `infra/` | AWS infrastructure (Terraform) |
 
+## Technical decisions
+
+- **Frontend and backend separated**: each has its own container and can be updated or scaled on its own (for example, more backends under load).
+- **nginx as reverse proxy**: the browser only talks to nginx, which forwards `/api/` to the backend. One address for the user, and the backend is never exposed to the internet.
+- **FastAPI (Python)**: a small, readable API in one file, with JSON answers out of the box.
+- **30-second cache**: visitors do not trigger new checks on every request, so the API stays fast and the monitored websites are not flooded.
+- **Docker + Docker Compose**: the same containers run on my computer and on AWS. One command starts everything locally.
+- **AWS ECS Fargate**: AWS runs the containers for me, with no server to install or maintain. It restarts a container if it stops.
+- **Load balancer**: one public address, spreads visitors over 2 frontend containers, and only sends traffic to healthy ones.
+- **Service Connect**: lets nginx reach the backend by the name `backend` on AWS, exactly like Docker Compose does locally.
+- **Terraform**: the infrastructure is written as code, so it can be reviewed, recreated or deleted with one command. One file per topic to stay readable.
+- **GitHub Actions**: every push is tested, built and deployed automatically. If the tests fail, nothing is deployed.
+- **Secrets in GitHub**: Docker Hub and AWS keys are never in the code. The AWS user of the pipeline can only redeploy the services.
+
 ## Clone
 
 ```
