@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Uptime Monitor</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 30px;
+        }
+
+        td,
+        th {
+            border: 1px solid #999;
+            padding: 6px 12px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Uptime Monitor</h1>
+    <button onclick="load()">Refresh</button>
+    <p id="info">Loading...</p>
+    <table>
+        <tr>
+            <th>Site</th>
+            <th>Status</th>
+            <th>HTTP code</th>
+            <th>Time</th>
+        </tr>
+        <tbody id="rows"></tbody>
+    </table>
+    <script>
+        async function load() {
+            try {
+                const response = await fetch("/api/status");
+                const data = await response.json();
+                let html = "";
+                for (const site of data.sites) {
+                    const color = site.up ? "green" : "red";
+                    html += "<tr>"
+                        + "<td>" + site.url + "</td>"
+                        + "<td style='color:" + color + "'>" + (site.up ? "UP" : "DOWN") + "</td>"
+                        + "<td>" + (site.status_code || "-") + "</td>"
+                        + "<td>" + site.response_ms + " ms</td>"
+                        + "</tr>";
+                }
+                document.getElementById("rows").innerHTML = html;
+                document.getElementById("info").textContent = "Served by: " + data.server;
+            } catch (error) {
+                document.getElementById("info").textContent = "Backend unavailable";
+            }
+        }
+        load();
+        setInterval(load, 10000);
+    </script>
+</body>
+
+</html>
