@@ -105,3 +105,12 @@ To test with more backend containers:
 cd infra
 terraform apply -var backend_count=4
 ```
+
+## What is missing / next improvements
+
+- **Automate Terraform**: run `terraform plan` / `apply` in the pipeline, with the state stored in S3.
+- **Autoscaling**: add or remove backend containers automatically based on CPU or traffic.
+- **Monitoring and alerts**: a CloudWatch dashboard and an alarm when the site or a monitored website goes down.
+- **HTTPS**: a domain name and a certificate (AWS ACM) on the load balancer.
+- **Better frontend**: proper CSS, mobile layout, history and uptime percentage per website.
+- **Safer deployments**: tag images with the commit id instead of `latest`, and use GitHub OIDC instead of AWS access keys.
