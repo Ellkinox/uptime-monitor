@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+  backend:
+    build: ./backend
+    environment:
+      - SITES=https://www.google.com,https://www.github.com,https://www.python.org
+      - CACHE_SECONDS=30
+  
